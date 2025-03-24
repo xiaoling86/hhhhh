@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生日快乐！</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(to bottom, #000000 0%, #000033 100%);
+            overflow: hidden;
+            position: relative;
+        }
+
+        h1 {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            font-size: 48px;
+            color: #ff69b4;
+            text-align: center;
+            animation: bounce 1s infinite alternate;
+            z-index: 1;
+            text-shadow: 0 0 10px #ff69b4;
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        @keyframes bounce {
+            from {
+                transform: translateY(0) translateX(-50%);
+            }
+
+            to {
+                transform: translateY(-20px) translateX(-50%);
+            }
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite alternate;
+        }
+
+        @keyframes twinkle {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0.2;
+            }
+        }
+
+        .birthday-message {
+            position: absolute;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            font-size: 32px;
+            color: #ff69b4;
+            text-shadow: 0 0 10px #ff69b4;
+            opacity: 0;
+        }
+
+        #curve {
+            position: absolute;
+            top: 20%; /* 曲线下移 20% */
+            left: 0;
+            z-index: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>生日快乐！🎂</h1>
+    <audio autoplay loop>
+        <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3" type="audio/mpeg">
+            你的浏览器不支持音频播放。
+        </source>
+    </audio>
+    <div class="birthday-message" id="message1" style="top: 25%;"></div>
+    <div class="birthday-message" id="message2" style="top: 35%;"></div>
+    <div class="birthday-message" id="message3" style="top: 45%;"></div>
+    <canvas id="curve"></canvas>
+    <script>
+        function createStars() {
+            for (let i = 0; i < 300; i++) { // 增加星星数量到 300
+                const star = document.createElement('div');
+                star.classList.add('star');
+                star.style.left = Math.random() * window.innerWidth + 'px';
+                star.style.top = Math.random() * window.innerHeight + 'px';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                document.body.appendChild(star);
+            }
+        }
+
+        createStars();
+
+        const canvas = document.getElementById('curve');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const a = 100;
+        const numPoints = 1000;
+        let progress = 0;
+        const speed = 0.005;
+
+        function drawCurve() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
+            ctx.strokeStyle = '#ff69b4';
+            ctx.lineWidth = 2;
+
+            for (let i = 0; i < numPoints * progress; i++) {
+                const theta = (i / numPoints) * 2 * Math.PI;
+                const r = a * (1 - Math.sin(theta));
+                const x = r * Math.cos(theta) + canvas.width / 2;
+                const y = -r * Math.sin(theta) + canvas.height / 2;
+
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+
+            ctx.stroke();
+            progress += speed;
+            if (progress > 1) {
+                progress = 0;
+            }
+            requestAnimationFrame(drawCurve);
+        }
+
+        drawCurve();
+
+        const messages = [
+            "愿你的每一天都如彩虹般绚丽！🌈",
+            "新的一岁，继续追逐梦想！💪",
+            "生日快乐，幸福永远围绕着你！🎉"
+        ];
+        const messageElements = [
+            document.getElementById('message1'),
+            document.getElementById('message2'),
+            document.getElementById('message3')
+        ];
+        const typingSpeed = 100;
+
+        function typeMessage(index, charIndex) {
+            if (index >= messages.length) return;
+            const message = messages[index];
+            const element = messageElements[index];
+            if (charIndex < message.length) {
+                element.textContent += message[charIndex];
+                element.style.opacity = 1;
+                setTimeout(() => typeMessage(index, charIndex + 1), typingSpeed);
+            } else {
+                setTimeout(() => typeMessage(index + 1, 0), 2000);
+            }
+        }
+
+        typeMessage(0, 0);
+    </script>
+</body>
+
+</html>  
